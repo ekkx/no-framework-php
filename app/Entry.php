@@ -26,7 +26,7 @@ class Entry
         $app->use(new CustomLoggerMiddleware($config));
         $app->use(new RequestLoggerMiddleware());
 
-        Route::init();
+        Route::init($app);
 
         $app->start();
     }

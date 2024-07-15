@@ -21,7 +21,7 @@ class HomeController
     {
         $message = $this->homeService->getHello();
 
-        $ctx->res->view(StatusCode::OK, "index.twig", [
+        $ctx->res->render(StatusCode::OK, "index.twig", [
             "message" => $message,
         ]);
     }

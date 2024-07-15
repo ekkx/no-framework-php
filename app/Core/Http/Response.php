@@ -89,9 +89,9 @@ class Response
         $this->withStatusCode($statusCode)->withHeader("Content-Type", ContentType::APPLICATION_JSON)->respond($content);
     }
 
-    public function view(int $statusCode, string $template, array $data = []): void
+    public function render(int $statusCode, string $view, array $data = []): void
     {
-        $content = $this->renderer->render($template, $data);
+        $content = $this->renderer->render($view, $data);
         $this->withStatusCode($statusCode)->withHeader("Content-Type", ContentType::TEXT_HTML)->respond($content);
     }
 }
