@@ -4,18 +4,32 @@ declare(strict_types=1);
 
 namespace App\Core\Http;
 
+use App\Core\Template\Renderer;
+
 class Response
 {
     private int $statusCode;
     private array $headers;
+    private Renderer $renderer;
     private bool $responded;
 
-    public function __construct()
+    public function __construct(Renderer $renderer)
     {
         $this->withStatusCode(StatusCode::OK);
         $this->withHeader("Content-Type", ContentType::TEXT_HTML);
 
+        $this->renderer = $renderer;
         $this->responded = false;
+    }
+
+    public function getRenderer(): Renderer
+    {
+        return $this->renderer;
+    }
+
+    public function setRenderer(Renderer $renderer): void
+    {
+        $this->renderer = $renderer;
     }
 
     public function getStatusCode(): int
@@ -73,5 +87,11 @@ class Response
     {
         $content = json_encode($data, JSON_UNESCAPED_UNICODE, JSON_UNESCAPED_SLASHES);
         $this->withStatusCode($statusCode)->withHeader("Content-Type", ContentType::APPLICATION_JSON)->respond($content);
+    }
+
+    public function view(int $statusCode, string $template, array $data = []): void
+    {
+        $content = $this->renderer->render($template, $data);
+        $this->withStatusCode($statusCode)->withHeader("Content-Type", ContentType::TEXT_HTML)->respond($content);
     }
 }

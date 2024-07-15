@@ -10,9 +10,13 @@ use App\Core\Exception\NotFoundException;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\StatusCode;
+use App\Core\Template\Renderer;
+use App\Core\Template\TwigRenderer;
 use Closure;
 use Dotenv\Dotenv;
 use Throwable;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class Kernel
 {
@@ -32,10 +36,17 @@ class Kernel
         $this->errorHandlers = $this->getDefaultErrorHandlers();
     }
 
+    private function getDefaultRenderer(): Renderer
+    {
+        $loader = new FilesystemLoader(__DIR__ . "/../../resources/view");
+        $twig = new Environment($loader);
+        return new TwigRenderer($twig);
+    }
+
     private function getDefaultContext(): Context
     {
         $req = Request::fromGlobals();
-        $res = new Response();
+        $res = new Response($this->getDefaultRenderer());
 
         return new Context($req, $res);
     }
@@ -82,6 +93,11 @@ class Kernel
     {
         $dotenv = Dotenv::createImmutable($paths);
         $dotenv->load();
+    }
+
+    public function template(Renderer $renderer): void
+    {
+        $this->ctx->res->setRenderer($renderer);
     }
 
     public function use(Middleware $middleware): void
