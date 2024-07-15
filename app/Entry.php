@@ -6,6 +6,7 @@ namespace App;
 
 use App\Core\Kernel;
 use App\Middleware\CustomLoggerMiddleware;
+use App\Middleware\RequestLoggerMiddleware;
 
 class Entry
 {
@@ -23,6 +24,7 @@ class Entry
         });
 
         $app->use(new CustomLoggerMiddleware($config));
+        $app->use(new RequestLoggerMiddleware());
 
         Route::init();
 
