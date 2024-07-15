@@ -11,10 +11,12 @@ readonly class Context
 {
     public Request $req;
     public Response $res;
+    public Logger $logger;
 
-    public function __construct(Request $req, Response $res)
+    public function __construct(Request $req, Response $res, ?Logger $logger = null)
     {
         $this->req = $req;
         $this->res = $res;
+        $this->logger = $logger ?? new Logger();
     }
 }
