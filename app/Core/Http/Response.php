@@ -71,7 +71,7 @@ class Response
 
     public function json(int $statusCode, array $data): void
     {
-        $content = json_encode($data);
+        $content = json_encode($data, JSON_UNESCAPED_UNICODE, JSON_UNESCAPED_SLASHES);
         $this->withStatusCode($statusCode)->withHeader("Content-Type", ContentType::APPLICATION_JSON)->respond($content);
     }
 }

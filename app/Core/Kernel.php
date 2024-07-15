@@ -9,6 +9,7 @@ use App\Core\Exception\MethodNotAllowedException;
 use App\Core\Exception\NotFoundException;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
+use App\Core\Http\StatusCode;
 use Closure;
 use Dotenv\Dotenv;
 use Throwable;
@@ -25,22 +26,10 @@ class Kernel
     public function __construct()
     {
         $this->container = new Container();
-            $this->router = new Router($this->container);
-        $this->ctx = $this->getDefaultContext();
+        $this->router = new Router($this->container);
         $this->middlewares = [];
-
-        $this->errorHandlers = [
-//            NotFoundException::class => function () {
-//                echo "Not Found";
-//            },
-//            MethodNotAllowedException::class => function () {
-//                echo "Method Not Allowed";
-//            },
-            InternalServerErrorException::class => function (Context $ctx, Throwable $e) {
-                echo $e->getMessage();
-//                echo "Internal Server Error";
-            },
-        ];
+        $this->ctx = $this->getDefaultContext();
+        $this->errorHandlers = $this->getDefaultErrorHandlers();
     }
 
     private function getDefaultContext(): Context
@@ -49,6 +38,31 @@ class Kernel
         $res = new Response();
 
         return new Context($req, $res);
+    }
+
+    private function getDefaultErrorHandlers(): array
+    {
+        return [
+            NotFoundException::class => function (Context $ctx, Throwable $e) {
+                $ctx->res->json(StatusCode::NOT_FOUND, [
+                    "code" => StatusCode::NOT_FOUND,
+                    "message" => $e->getMessage(),
+                ]);
+            },
+            MethodNotAllowedException::class => function (Context $ctx, Throwable $e) {
+                $ctx->res->json(StatusCode::METHOD_NOT_ALLOWED, [
+                    "code" => StatusCode::METHOD_NOT_ALLOWED,
+                    "message" => $e->getMessage(),
+                ]);
+            },
+            InternalServerErrorException::class => function (Context $ctx, Throwable $e) {
+                $ctx->res->json(StatusCode::INTERNAL_SERVER_ERROR, [
+                    "code" => StatusCode::INTERNAL_SERVER_ERROR,
+                    "message" => $e->getMessage(),
+                    "trace" => $e->getTraceAsString(),
+                ]);
+            },
+        ];
     }
 
     public function getContainer(): Container
