@@ -22,6 +22,7 @@ class ErrorController
 
     public function internalServerError(Context $ctx, Throwable $e): void
     {
+        $ctx->logger->error($e->getMessage(), $this, $e->getTrace());
         $ctx->res->render(StatusCode::NOT_FOUND, "error/500.twig");
     }
 }
