@@ -1,0 +1,21 @@
+.env
+
+# Logs
+logs
+*.log
+
+# PHP
+vendor
+.phpunit*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
