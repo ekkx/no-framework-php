@@ -1,0 +1,10 @@
+{
+  "emmet.includeLanguages": {
+    "twig": "html"
+  },
+  "[php]": {
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
