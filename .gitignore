@@ -8,6 +8,9 @@ logs
 vendor
 .phpunit*
 
+# Database
+database/database.sqlite
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
