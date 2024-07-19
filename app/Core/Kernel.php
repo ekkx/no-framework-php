@@ -38,7 +38,7 @@ class Kernel
 
     private function getDefaultRenderer(): Renderer
     {
-        $loader = new FilesystemLoader(__DIR__ . "/../../resources/view");
+        $loader = new FilesystemLoader(__DIR__ . "/../../resources/views");
         $twig = new Environment($loader);
         return new TwigRenderer($twig);
     }
