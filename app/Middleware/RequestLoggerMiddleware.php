@@ -13,11 +13,6 @@ class RequestLoggerMiddleware implements Middleware
     public static function run($next): Closure
     {
         return function (Context $ctx) use ($next) {
-            $method = $ctx->req->getMethod();
-            $path = $ctx->req->getPath();
-
-            $ctx->logger->debug("=============== {$method} {$path} ===============");
-
             $start = microtime(true); // Measure processing time
 
             $next($ctx);
@@ -27,11 +22,12 @@ class RequestLoggerMiddleware implements Middleware
             $finish = microtime(true);
             $time = floor(($finish - $start) * 1000);
 
+            $method = $ctx->req->getMethod();
             $uri = $ctx->req->getUri();
             $code = $ctx->res->getStatusCode();
             $body = json_encode($ctx->req->getBody(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-            $ctx->logger->debug("{$method} {$uri} ({$code}) +{$time}ms {$body}", "HTTP");
+            $ctx->logger->debug("{$method}: {$uri} ({$code}) +{$time}ms {$body}", "HTTP");
         };
     }
 }
