@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Template;
+namespace App\Core\Renderer;
 
 interface Renderer
 {
