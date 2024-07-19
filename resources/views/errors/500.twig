@@ -1,0 +1,18 @@
+{% extends "layout/master.twig" %}
+
+{% block title %}500{% endblock %}
+
+{% block content %}
+    <div class="h-screen w-full flex flex-col justify-center items-center bg-gray-100">
+        <h1 class="text-9xl font-extrabold tracking-widest text-blue-600">500</h1>
+        <div class="text-blue-600 text-sm rounded mt-2">
+            Internal Server Error
+        </div>
+        <button class="mt-7">
+            <a href="/"
+               class="relative inline-block bg-blue-600 px-8 py-3 w-full text-center md:w-auto rounded-lg text-white text-xs tracking-wider font-semibold hover:bg-blue-800">
+                Go Home
+            </a>
+        </button>
+    </div>
+{% endblock %}

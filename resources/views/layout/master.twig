@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ block("title") }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="/dist/js/index.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..700;1,300..700&display=swap');
+
+        .open-sans {
+            font-family: "Open Sans", sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>
