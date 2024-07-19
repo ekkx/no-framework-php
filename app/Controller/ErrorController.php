@@ -12,17 +12,21 @@ class ErrorController
 {
     public function notFound(Context $ctx, Throwable $e): void
     {
-        $ctx->res->render(StatusCode::NOT_FOUND, "error/404.twig");
+        $ctx->res->render(StatusCode::NOT_FOUND, "errors/404.twig");
     }
 
     public function methodNotAllowed(Context $ctx, Throwable $e): void
     {
-        $ctx->res->render(StatusCode::NOT_FOUND, "error/405.twig");
+        $ctx->res->json(StatusCode::METHOD_NOT_ALLOWED, [
+            "ok" => false,
+            "message" => "method not allowed",
+        ]);
     }
 
     public function internalServerError(Context $ctx, Throwable $e): void
     {
         $ctx->logger->error($e->getMessage(), $this, $e->getTrace());
-        $ctx->res->render(StatusCode::NOT_FOUND, "error/500.twig");
+
+        $ctx->res->render(StatusCode::INTERNAL_SERVER_ERROR, "errors/500.twig");
     }
 }
