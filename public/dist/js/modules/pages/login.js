@@ -10,7 +10,7 @@ export const login = {
         await client.user.login(email, password);
     },
 
-    init() {
+    init: () => {
         this.loginButton && this.loginButton.addEventListener("click", this.handleLogin);
     }
 }

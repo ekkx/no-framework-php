@@ -12,7 +12,7 @@ export const signup = {
         await client.user.create(username, email, password, passwordConfirm);
     },
 
-    init() {
+    init: () => {
         this.signupButton && this.signupButton.addEventListener("click", this.handleSignup);
     }
 }
