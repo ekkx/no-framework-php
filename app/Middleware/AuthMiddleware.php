@@ -39,7 +39,7 @@ class AuthMiddleware implements Middleware
 
                 $payload = JWT::decode($token, $key);
 
-                $ctx->req->setBody(["uid" => intval(["uid" => $payload->uid])]);
+                $ctx->req->setBody(["uid" => intval($payload->uid)]);
             } catch (Exception $e) {
                 $ctx->logger->debug($e->getMessage(), self::class);
                 $ctx->res->redirect("/auth/login");
