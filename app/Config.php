@@ -9,6 +9,7 @@ class Config
     private static Config $instance;
 
     public bool $appDebug;
+    public string $appSecretKey;
 
     public string $logFileDebug;
     public string $logFileInfo;
@@ -27,6 +28,7 @@ class Config
     {
         return [
             "appDebug" => isset($_ENV["APP_DEBUG"]) && strtolower($_ENV["APP_DEBUG"]) === "true",
+            "appSecretKey" => $_ENV["APP_SECRET_KEY"] ?? "",
 
             "logFileDebug" => $_ENV["LOG_FILE_DEBUG"] ?? "php://stdout",
             "logFileInfo" => $_ENV["LOG_FILE_INFO"] ?? "php://stdout",
