@@ -84,13 +84,13 @@ class Router
             }
         });
 
-        $uri = $ctx->req->getUri();
+        $uri = $ctx->req->uri();
         if (false !== $pos = strpos($uri, "?")) {
             $uri = substr($uri, 0, $pos);
         }
         $uri = rawurldecode($uri);
 
-        $routeInfo = $dispatcher->dispatch($ctx->req->getMethod(), $uri);
+        $routeInfo = $dispatcher->dispatch($ctx->req->method(), $uri);
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
                 throw new NotFoundException("Route not found");

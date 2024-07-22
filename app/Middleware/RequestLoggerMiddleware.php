@@ -22,10 +22,10 @@ class RequestLoggerMiddleware implements Middleware
             $finish = microtime(true);
             $time = floor(($finish - $start) * 1000);
 
-            $method = $ctx->req->getMethod();
-            $uri = $ctx->req->getUri();
-            $code = $ctx->res->getStatusCode();
-            $body = json_encode($ctx->req->getBody(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            $method = $ctx->req->method();
+            $uri = $ctx->req->uri();
+            $code = $ctx->res->getStatus();
+            $body = json_encode($ctx->req->body(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
             $ctx->logger->debug("{$method}: {$uri} ({$code}) +{$time}ms {$body}", "HTTP");
         };

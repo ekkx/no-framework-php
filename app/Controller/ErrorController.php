@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Core\Context;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use Throwable;
 
 class ErrorController
 {
     public function notFound(Context $ctx, Throwable $e): void
     {
-        $ctx->res->render(StatusCode::NOT_FOUND, "errors/404.twig");
+        $ctx->res->status(Status::NOT_FOUND)->render("errors/404.twig");
     }
 
     public function methodNotAllowed(Context $ctx, Throwable $e): void
     {
-        $ctx->res->json(StatusCode::METHOD_NOT_ALLOWED, [
+        $ctx->res->status(Status::METHOD_NOT_ALLOWED)->json([
             "ok" => false,
             "message" => "method not allowed",
         ]);
@@ -27,6 +27,6 @@ class ErrorController
     {
         $ctx->logger->error($e->getMessage(), $this, $e->getTrace());
 
-        $ctx->res->render(StatusCode::INTERNAL_SERVER_ERROR, "errors/500.twig");
+        $ctx->res->status(Status::INTERNAL_SERVER_ERROR)->render("errors/500.twig");
     }
 }

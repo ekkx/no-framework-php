@@ -32,7 +32,6 @@ class Route
             Router::group("/users", function () {
                 Router::post("/login", UserApiController::class, "login");
                 Router::post("/create", UserApiController::class, "create");
-                Router::post("/logout", UserApiController::class, "logout");
             });
         });
 

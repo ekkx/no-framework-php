@@ -5,17 +5,27 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Core\Context;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
+use App\Service\UserService;
 
 class AdminController
 {
+    private UserService $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     public function index(Context $ctx): void
     {
-        $ctx->res->render(StatusCode::OK, "admin/index.twig", [
+        $user = $this->userService->findOneById($ctx->req->body("uid"));
+
+        $ctx->res->status(Status::OK)->render("admin/index.twig", [
             "user" => [
-                "username" => "Username",
-                "email" => "your@email.com",
-                "password" => "*********"
+                "username" => $user->username,
+                "email" => $user->email,
+                "lastLoginAt" => $user->lastLoginAt
             ]
         ]);
     }

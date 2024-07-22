@@ -9,7 +9,7 @@ use App\Core\Exception\MethodNotAllowedException;
 use App\Core\Exception\NotFoundException;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Core\Renderer\Renderer;
 use App\Core\Renderer\TwigRenderer;
 use Closure;
@@ -55,20 +55,20 @@ class Kernel
     {
         return [
             NotFoundException::class => function (Context $ctx, Throwable $e) {
-                $ctx->res->json(StatusCode::NOT_FOUND, [
-                    "code" => StatusCode::NOT_FOUND,
+                $ctx->res->status(Status::NOT_FOUND)->json([
+                    "code" => Status::NOT_FOUND,
                     "message" => $e->getMessage(),
                 ]);
             },
             MethodNotAllowedException::class => function (Context $ctx, Throwable $e) {
-                $ctx->res->json(StatusCode::METHOD_NOT_ALLOWED, [
-                    "code" => StatusCode::METHOD_NOT_ALLOWED,
+                $ctx->res->status(Status::METHOD_NOT_ALLOWED)->json([
+                    "code" => Status::METHOD_NOT_ALLOWED,
                     "message" => $e->getMessage(),
                 ]);
             },
             InternalServerErrorException::class => function (Context $ctx, Throwable $e) {
-                $ctx->res->json(StatusCode::INTERNAL_SERVER_ERROR, [
-                    "code" => StatusCode::INTERNAL_SERVER_ERROR,
+                $ctx->res->status(Status::INTERNAL_SERVER_ERROR)->json([
+                    "code" => Status::INTERNAL_SERVER_ERROR,
                     "message" => $e->getMessage(),
                     "trace" => $e->getTraceAsString(),
                 ]);
@@ -97,7 +97,7 @@ class Kernel
 
     public function template(Renderer $renderer): void
     {
-        $this->ctx->res->setRenderer($renderer);
+        $this->ctx->res->renderer($renderer);
     }
 
     public function use(Middleware $middleware): void
