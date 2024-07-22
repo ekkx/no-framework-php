@@ -49,59 +49,77 @@ class Request
         return $data[$key] ?? $default;
     }
 
-    public function getMethod(): string
+    public function method(): string
     {
         return $this->method;
     }
 
-    public function getUri(): string
+    public function uri(): string
     {
         return $this->uri;
     }
 
-    public function getPath(): string
+    public function path(): string
     {
         return parse_url($this->uri, PHP_URL_PATH);
     }
 
-    public function getParams(?string $key = null, string $default = ""): array|string
+    public function params(?string $key = null, mixed $default = ""): mixed
     {
         return $this->getValueFromArray($this->params, $key, $default);
     }
 
-    public function getQuery(?string $key = null, string $default = ""): array|string
+    public function query(?string $key = null, mixed $default = ""): mixed
     {
         return $this->getValueFromArray($this->query, $key, $default);
     }
 
-    public function getBody(?string $key = null, mixed $default = null): mixed
+    public function body(?string $key = null, mixed $default = null): mixed
     {
         return $this->getValueFromArray($this->body, $key, $default);
     }
 
-    public function getHeaders(?string $key = null, string $default = ""): array|string
+    public function headers(?string $key = null, mixed $default = ""): mixed
     {
         return $this->getValueFromArray($this->headers, $key, $default);
     }
 
-    public function getCookies(?string $key = null, string $default = ""): array|string
+    public function cookies(?string $key = null, mixed $default = ""): mixed
     {
         return $this->getValueFromArray($this->cookies, $key, $default);
     }
 
-    public function getFiles(?string $key = null, string $default = null): array|string|null
+    public function files(?string $key = null, mixed $default = null): mixed
     {
         return $this->getValueFromArray($this->files, $key, $default);
     }
 
-    public function getIp(): string
+    public function ip(): string
     {
         return $this->ip;
     }
 
     public function setParams(array $params): self
     {
-        $this->params = $params;
+        $this->params = array_merge($this->params ?? [], $params);
+        return $this;
+    }
+
+    public function setQuery(array $query): self
+    {
+        $this->query = array_merge($this->query ?? [], $query);
+        return $this;
+    }
+
+    public function setBody(array $body): self
+    {
+        $this->body = array_merge($this->body ?? [], $body);
+        return $this;
+    }
+
+    public function setHeaders(array $headers): self
+    {
+        $this->headers = array_merge($this->headers ?? [], $headers);
         return $this;
     }
 }

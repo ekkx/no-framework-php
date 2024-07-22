@@ -8,15 +8,15 @@ use App\Core\Renderer\Renderer;
 
 class Response
 {
-    private int $statusCode;
+    private int $status;
     private array $headers;
     private Renderer $renderer;
     private bool $responded;
 
     public function __construct(Renderer $renderer)
     {
-        $this->withStatusCode(StatusCode::OK);
-        $this->withHeader("Content-Type", ContentType::TEXT_HTML);
+        $this->status(Status::OK);
+        $this->headers(["Content-Type" => ContentType::TEXT_HTML]);
 
         $this->renderer = $renderer;
         $this->responded = false;
@@ -27,46 +27,44 @@ class Response
         return $this->renderer;
     }
 
-    public function setRenderer(Renderer $renderer): void
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    public function getHeaders(?string $key = null, mixed $default = ""): mixed
+    {
+        if (is_null($key)) {
+            return $this->headers;
+        }
+
+        return $this->headers[$key] ?? $default;
+    }
+
+    public function renderer(Renderer $renderer): void
     {
         $this->renderer = $renderer;
     }
 
-    public function getStatusCode(): int
+    public function status(int $status): self
     {
-        return $this->statusCode;
-    }
-
-    public function getHeaders(): array
-    {
-        return $this->headers;
-    }
-
-    public function withStatusCode(int $statusCode): self
-    {
-        $this->statusCode = $statusCode;
+        $this->status = $status;
         return $this;
     }
 
-    public function withHeader(string $name, string $value): self
+    public function headers(array $headers): self
     {
-        $this->headers[$name] = $value;
+        $this->headers = array_merge($this->headers ?? [], $headers);
         return $this;
     }
 
-    public function withHeaders(array $headers): self
-    {
-        $this->headers = array_merge($this->headers, $headers);
-        return $this;
-    }
-
-    private function respond(?string $content = null): void
+    public function send(?string $content = null): void
     {
         if ($this->responded) {
             return;
         }
 
-        http_response_code($this->statusCode);
+        http_response_code($this->status);
         foreach ($this->headers as $header => $value) {
             header($header . ": " . $value, false);
         }
@@ -78,20 +76,20 @@ class Response
         $this->responded = true;
     }
 
-    public function redirect(string $url): void
+    public function redirect(string $url, int $status = 302): void
     {
-        $this->withStatusCode(StatusCode::FOUND)->withHeader("Location", $url)->respond();
+        $this->status($status)->headers(["Location" => $url])->send();
     }
 
-    public function json(int $statusCode, array $data): void
+    public function json(array $data): void
     {
         $content = json_encode($data, JSON_UNESCAPED_UNICODE, JSON_UNESCAPED_SLASHES);
-        $this->withStatusCode($statusCode)->withHeader("Content-Type", ContentType::APPLICATION_JSON)->respond($content);
+        $this->headers(["Content-Type" => ContentType::APPLICATION_JSON])->send($content);
     }
 
-    public function render(int $statusCode, string $view, array $data = []): void
+    public function render(string $view, array $data = []): void
     {
         $content = $this->renderer->render($view, $data);
-        $this->withStatusCode($statusCode)->withHeader("Content-Type", ContentType::TEXT_HTML)->respond($content);
+        $this->headers(["Content-Type" => ContentType::TEXT_HTML])->send($content);
     }
 }

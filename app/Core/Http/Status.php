@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Http;
 
-class StatusCode
+class Status
 {
     public const int OK = 200;
     public const int CREATED = 201;
