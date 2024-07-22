@@ -14,4 +14,5 @@ class User extends Model
     public ?string $password = null;
     public ?string $createdAt = null;
     public ?string $updatedAt = null;
+    public ?string $lastLoginAt = null;
 }
