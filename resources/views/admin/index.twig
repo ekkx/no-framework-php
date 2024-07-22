@@ -18,8 +18,8 @@
                         </a>
                     </li>
                     <li>
-                        <form action="/users/logout" method="post">
-                            <button class="p-2 rounded hover:bg-gray-200" type="submit">
+                        <form>
+                            <button id="logout-button" class="p-2 rounded hover:bg-gray-200" type="submit">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-current text-gray-800"
                                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -49,7 +49,7 @@
                                     <h2 class="text-gray-800 font-bold tracking-widest leading-tight">{{ user.username }}</h2>
                                     <div class="items-center gap-4">
                                         <p class="text-lg text-gray-600 tracking-wider">{{ user.email }}</p>
-                                        <p class="text-lg text-gray-600 tracking-wider">{{ user.password }}</p>
+                                        <p class="text-lg text-gray-600 tracking-wider">************</p>
                                     </div>
                                 </div>
                                 <h2 class="text-lg md:text-xl xl:text-3xl text-gray-700 font-black tracking-wider">

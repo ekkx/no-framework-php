@@ -1,11 +1,13 @@
-import {signup} from "./pages/signup.js";
-import {login} from "./pages/login.js";
+import {Signup} from "./pages/signup.js";
+import {Login} from "./pages/login.js";
+import {Admin} from "./pages/admin.js";
 
 export const app = {
     init: () => {
         document.addEventListener("DOMContentLoaded", () => {
-            signup.init();
-            login.init();
+            new Signup();
+            new Login();
+            new Admin();
         });
     }
 }
