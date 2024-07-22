@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Config;
 use App\Dto\LoginDto;
+use App\Dto\SignupDto;
 use App\Exception\UserAlreadyRegisteredException;
 use App\Exception\InvalidEmailOrPasswordException;
 use App\Model\User;
@@ -37,15 +38,15 @@ class UserService
     /**
      * @throws UserAlreadyRegisteredException
      */
-    public function create(string $username, string $email, string $password): ?User
+    public function create(SignupDto $body): ?User
     {
-        if ($this->userRepository->findOneBy("email", $email)) {
+        if ($this->userRepository->findOneBy("email", $body->email)) {
             throw new UserAlreadyRegisteredException();
         }
 
-        $password = password_hash($password, PASSWORD_DEFAULT);
+        $password = password_hash($body->password, PASSWORD_DEFAULT);
 
-        return $this->userRepository->create($username, $email, $password);
+        return $this->userRepository->create($body->username, $body->email, $password);
     }
 
     private function generateAccessToken(int $userId): string

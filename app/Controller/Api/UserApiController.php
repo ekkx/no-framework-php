@@ -27,7 +27,7 @@ class UserApiController
         try {
             $body = new SignupDto($ctx->req->body());
 
-            $user = $this->userService->create($body->username, $body->email, $body->password);
+            $user = $this->userService->create($body);
 
             $ctx->res->status(Status::CREATED)->json([
                 "ok" => true,
