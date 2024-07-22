@@ -18,7 +18,7 @@ class UserRepository extends SQLiteRepository
         $statement = $this::pdo()->prepare($sql);
         $statement->execute([$username, $email, $password]);
 
-        return $this->findOneByEmail($email);
+        return $this->findOneBy("email", $email);
     }
 
     /** @return User[] */
@@ -33,14 +33,22 @@ class UserRepository extends SQLiteRepository
         return $statement->fetchAll();
     }
 
-    public function findOneByEmail(string $email): ?User
+    public function findOneBy(string $col, mixed $value): ?User
     {
-        $sql = "SELECT * FROM $this->table WHERE email = ?";
+        $sql = "SELECT * FROM $this->table WHERE $col = ?";
 
         $statement = $this::pdo()->prepare($sql);
         $statement->setFetchMode(PDO::FETCH_CLASS, User::class);
-        $statement->execute([$email]);
+        $statement->execute([$value]);
 
         return $statement->fetch() ?: null;
+    }
+
+    public function updateLastLoginAt(int $id): void
+    {
+        $sql = "UPDATE $this->table SET lastLoginAt = datetime('now') WHERE id = ?";
+
+        $statement = $this::pdo()->prepare($sql);
+        $statement->execute([$id]);
     }
 }

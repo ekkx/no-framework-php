@@ -4,18 +4,28 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Config;
+use App\Dto\LoginDto;
 use App\Exception\UserAlreadyRegisteredException;
 use App\Exception\InvalidEmailOrPasswordException;
 use App\Model\User;
 use App\Repository\UserRepository;
+use Firebase\JWT\JWT;
 
 class UserService
 {
+    private Config $config;
     private UserRepository $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(Config $config, UserRepository $userRepository)
     {
+        $this->config = $config;
         $this->userRepository = $userRepository;
+    }
+
+    public function findOneById(int $id): ?User
+    {
+        return $this->userRepository->findOneBy("id", $id);
     }
 
     /** @return User[] */
@@ -29,28 +39,40 @@ class UserService
      */
     public function create(string $username, string $email, string $password): ?User
     {
-        if ($this->userRepository->findOneByEmail($email)) {
+        if ($this->userRepository->findOneBy("email", $email)) {
             throw new UserAlreadyRegisteredException();
         }
 
-        // TODO: hash password
+        $password = password_hash($password, PASSWORD_DEFAULT);
 
         return $this->userRepository->create($username, $email, $password);
+    }
+
+    private function generateAccessToken(int $userId): string
+    {
+        return JWT::encode([
+            "exp" => time() + 60 * 3, // 3 minutes
+            "uid" => $userId,
+        ], $this->config->appSecretKey, "HS256");
     }
 
     /**
      * @throws InvalidEmailOrPasswordException
      */
-    public function login(string $email, string $password): void
+    public function login(LoginDto $body): string
     {
-        $user = $this->userRepository->findOneByEmail($email);
+        $user = $this->userRepository->findOneBy("email", $body->email);
 
         if (is_null($user)) {
             throw new InvalidEmailOrPasswordException();
         }
 
-        if (!password_verify($password, $user->password)) {
+        if (!password_verify($body->password, $user->password)) {
             throw new InvalidEmailOrPasswordException();
         }
+
+        $this->userRepository->updateLastLoginAt($user->id);
+
+        return $this->generateAccessToken($user->id);
     }
 }
