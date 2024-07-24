@@ -12,12 +12,11 @@ use App\Controller\HomeController;
 use App\Core\Exception\InternalServerErrorException;
 use App\Core\Exception\MethodNotAllowedException;
 use App\Core\Exception\NotFoundException;
-use App\Core\Kernel;
 use App\Core\Router;
 
 class Route
 {
-    public static function init(Kernel $app): void
+    public static function init(): void
     {
         Router::get("/", HomeController::class, "index");
 
@@ -35,8 +34,8 @@ class Route
             });
         });
 
-        $app->onError(NotFoundException::class, ErrorController::class, "notFound");
-        $app->onError(MethodNotAllowedException::class, ErrorController::class, "methodNotAllowed");
-        $app->onError(InternalServerErrorException::class, ErrorController::class, "internalServerError");
+        Router::onError(NotFoundException::class, ErrorController::class, "notFound");
+        Router::onError(MethodNotAllowedException::class, ErrorController::class, "methodNotAllowed");
+        Router::onError(InternalServerErrorException::class, ErrorController::class, "internalServerError");
     }
 }

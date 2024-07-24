@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Core\Exception\InternalServerErrorException;
-use App\Core\Exception\MethodNotAllowedException;
-use App\Core\Exception\NotFoundException;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
-use App\Core\Http\Status;
 use App\Core\Renderer\Renderer;
 use App\Core\Renderer\TwigRenderer;
 use Closure;
@@ -25,7 +21,6 @@ class Kernel
     private Context $ctx;
     /** @var Middleware[] */
     private array $middlewares;
-    private array $errorHandlers;
 
     public function __construct()
     {
@@ -33,7 +28,6 @@ class Kernel
         $this->router = new Router($this->container);
         $this->middlewares = [];
         $this->ctx = $this->getDefaultContext();
-        $this->errorHandlers = $this->getDefaultErrorHandlers();
     }
 
     private function getDefaultRenderer(): Renderer
@@ -49,31 +43,6 @@ class Kernel
         $res = new Response($this->getDefaultRenderer());
 
         return new Context($req, $res);
-    }
-
-    private function getDefaultErrorHandlers(): array
-    {
-        return [
-            NotFoundException::class => function (Context $ctx, Throwable $e) {
-                $ctx->res->status(Status::NOT_FOUND)->json([
-                    "code" => Status::NOT_FOUND,
-                    "message" => $e->getMessage(),
-                ]);
-            },
-            MethodNotAllowedException::class => function (Context $ctx, Throwable $e) {
-                $ctx->res->status(Status::METHOD_NOT_ALLOWED)->json([
-                    "code" => Status::METHOD_NOT_ALLOWED,
-                    "message" => $e->getMessage(),
-                ]);
-            },
-            InternalServerErrorException::class => function (Context $ctx, Throwable $e) {
-                $ctx->res->status(Status::INTERNAL_SERVER_ERROR)->json([
-                    "code" => Status::INTERNAL_SERVER_ERROR,
-                    "message" => $e->getMessage(),
-                    "trace" => $e->getTraceAsString(),
-                ]);
-            },
-        ];
     }
 
     public function getContainer(): Container
@@ -105,13 +74,6 @@ class Kernel
         $this->middlewares[] = $middleware;
     }
 
-    public function onError(string $exception, string $class, string $method): void
-    {
-        $this->errorHandlers[$exception] = function (Context $ctx, Throwable $e) use ($class, $method) {
-            $this->container->get($class)->$method($ctx, $e);
-        };
-    }
-
     public function start(): void
     {
         try {
@@ -126,10 +88,7 @@ class Kernel
             );
             $middlewareRunner($this->ctx);
         } catch (Throwable $e) {
-            $handler = $this->errorHandlers[get_class($e)] ?? $this->errorHandlers[InternalServerErrorException::class];
-            if (!is_null($handler)) {
-                call_user_func($handler, $this->ctx, $e);
-            }
+            $this->router->handleError($this->ctx, $e);
         }
     }
 }

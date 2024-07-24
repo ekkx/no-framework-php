@@ -28,7 +28,7 @@ class Entry
         $app->use(new RequestLoggerMiddleware());
         $app->use(new AuthMiddleware($config));
 
-        Route::init($app);
+        Route::init();
 
         $app->start();
     }

@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Core\Exception\InternalServerErrorException;
 use App\Core\Exception\MethodNotAllowedException;
 use App\Core\Exception\NotFoundException;
 use App\Core\Http\Method;
+use App\Core\Http\Status;
 use Closure;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
+use Throwable;
 
 use function FastRoute\simpleDispatcher;
 
@@ -18,12 +21,40 @@ class Router
     private static Container $container;
     private static array $routes;
     private static string $prefix;
+    private static array $errorHandlers;
 
     public function __construct(Container $container)
     {
         self::$container = $container;
         self::$routes = [];
         self::$prefix = "";
+
+        self::$errorHandlers = self::getDefaultErrorHandlers();
+    }
+
+    private static function getDefaultErrorHandlers(): array
+    {
+        return [
+            NotFoundException::class => function (Context $ctx, Throwable $e) {
+                $ctx->res->status(Status::NOT_FOUND)->json([
+                    "code" => Status::NOT_FOUND,
+                    "message" => $e->getMessage(),
+                ]);
+            },
+            MethodNotAllowedException::class => function (Context $ctx, Throwable $e) {
+                $ctx->res->status(Status::METHOD_NOT_ALLOWED)->json([
+                    "code" => Status::METHOD_NOT_ALLOWED,
+                    "message" => $e->getMessage(),
+                ]);
+            },
+            InternalServerErrorException::class => function (Context $ctx, Throwable $e) {
+                $ctx->res->status(Status::INTERNAL_SERVER_ERROR)->json([
+                    "code" => Status::INTERNAL_SERVER_ERROR,
+                    "message" => $e->getMessage(),
+                    "trace" => $e->getTraceAsString(),
+                ]);
+            },
+        ];
     }
 
     public static function group(string $prefix, Closure $handler): void
@@ -70,6 +101,21 @@ class Router
         self::add(Method::DELETE, $path, function (Context $ctx) use ($class, $method) {
             self::$container->get($class)->$method($ctx);
         });
+    }
+
+    public static function onError(string $exception, string $class, string $method): void
+    {
+        self::$errorHandlers[$exception] = function (Context $ctx, Throwable $e) use ($class, $method) {
+            self::$container->get($class)->$method($ctx, $e);
+        };
+    }
+
+    public function handleError(Context $ctx, Throwable $e): void
+    {
+        $handler = self::$errorHandlers[get_class($e)] ?? self::$errorHandlers[InternalServerErrorException::class];
+        if (!is_null($handler)) {
+            call_user_func($handler, $ctx, $e);
+        }
     }
 
     /**
