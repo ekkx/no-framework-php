@@ -6,18 +6,18 @@ namespace App\Core\Renderer;
 
 use App\Core\Exception\RuntimeException;
 use Exception;
-use Twig\Environment as TwigEngine;
+use Twig\Environment as Twig;
 
 class TwigRenderer implements Renderer
 {
-    protected TwigEngine $engine;
+    protected Twig $engine;
 
-    public function __construct(TwigEngine $engine)
+    public function __construct(Twig $engine)
     {
         $this->engine = $engine;
     }
 
-    public function getEngine(): TwigEngine
+    public function getEngine(): Twig
     {
         return $this->engine;
     }
