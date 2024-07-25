@@ -15,15 +15,11 @@ use Monolog\Logger as Monolog;
 
 class CustomLoggerMiddleware implements Middleware
 {
-    private static string $outputPathInfo;
-    private static string $outputPathDebug;
-    private static string $outputPathError;
+    private static Config $config;
 
     public function __construct(Config $config)
     {
-        self::$outputPathInfo = $config->logFileInfo;
-        self::$outputPathDebug = $config->logFileDebug;
-        self::$outputPathError = $config->logFileError;
+        self::$config = $config;
     }
 
     public static function run(Closure $next): Closure
@@ -36,15 +32,21 @@ class CustomLoggerMiddleware implements Middleware
             $formatter = new LineFormatter($format, $dateFormat);
             $formatter->includeStacktraces();
 
-            $paths = [
-                ["path" => self::$outputPathInfo, "level" => Level::Info],
-                ["path" => self::$outputPathDebug, "level" => Level::Debug],
-                ["path" => self::$outputPathError, "level" => Level::Error]
+            $handlers = [
+                ["stream" => self::$config->logFileInfo, "level" => Level::Info],
+                ["stream" => self::$config->logFileDebug, "level" => Level::Debug],
+                ["stream" => self::$config->logFileError, "level" => Level::Error]
             ];
 
-            for ($i = 0; $i < count($paths); $i++) {
-                $streamHandler = new StreamHandler($paths[$i]["path"], $paths[$i]["level"]);
+            foreach ($handlers as $handler) {
+                // Skip handler if its level is lower than the configured log level
+                if (Level::fromName(self::$config->logLevel)->value > $handler["level"]->value) {
+                    continue;
+                }
+
+                $streamHandler = new StreamHandler($handler["stream"], $handler["level"]);
                 $streamHandler->setFormatter($formatter);
+                $streamHandler->setBubble(false);
                 $monolog->pushHandler($streamHandler);
             }
 

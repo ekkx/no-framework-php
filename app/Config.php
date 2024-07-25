@@ -11,6 +11,7 @@ class Config
     public bool $appDebug;
     public string $appSecretKey;
 
+    public string $logLevel;
     public string $logFileDebug;
     public string $logFileInfo;
     public string $logFileError;
@@ -30,6 +31,7 @@ class Config
             "appDebug" => isset($_ENV["APP_DEBUG"]) && strtolower($_ENV["APP_DEBUG"]) === "true",
             "appSecretKey" => $_ENV["APP_SECRET_KEY"] ?? "",
 
+            "logLevel" => $_ENV["LOG_LEVEL"] ?? "debug",
             "logFileDebug" => $_ENV["LOG_FILE_DEBUG"] ?? "php://stdout",
             "logFileInfo" => $_ENV["LOG_FILE_INFO"] ?? "php://stdout",
             "logFileError" => $_ENV["LOG_FILE_ERROR"] ?? "php://stderr",

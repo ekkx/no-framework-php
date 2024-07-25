@@ -23,9 +23,17 @@ class Logger
     {
         $monolog = new Monolog("App");
 
-        $monolog->pushHandler(new StreamHandler("php://stdout", Level::Info));
-        $monolog->pushHandler(new StreamHandler("php://stdout", Level::Debug));
-        $monolog->pushHandler(new StreamHandler("php://stderr", Level::Error));
+        $handlers = [
+            ["stream" => "php://stdout", "level" => Level::Info],
+            ["stream" => "php://stdout", "level" => Level::Debug],
+            ["stream" => "php://stderr", "level" => Level::Error]
+        ];
+
+        foreach ($handlers as $handler) {
+            $streamHandler = new StreamHandler($handler["stream"], $handler["level"]);
+            $streamHandler->setBubble(false);
+            $monolog->pushHandler($streamHandler);
+        }
 
         return $monolog;
     }
