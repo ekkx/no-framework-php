@@ -58,10 +58,10 @@ class Response
         return $this;
     }
 
-    public function send(?string $content = null): void
+    public function send(?string $content = null): self
     {
         if ($this->responded) {
-            return;
+            return $this;
         }
 
         http_response_code($this->status);
@@ -74,22 +74,24 @@ class Response
         }
 
         $this->responded = true;
+
+        return $this;
     }
 
-    public function redirect(string $url, int $status = 302): void
+    public function redirect(string $url, int $status = 302): self
     {
-        $this->status($status)->headers(["Location" => $url])->send();
+        return $this->status($status)->headers(["Location" => $url])->send();
     }
 
-    public function json(array $data): void
+    public function json(array $data): self
     {
         $content = json_encode($data, JSON_UNESCAPED_UNICODE, JSON_UNESCAPED_SLASHES);
-        $this->headers(["Content-Type" => ContentType::APPLICATION_JSON])->send($content);
+        return $this->headers(["Content-Type" => ContentType::APPLICATION_JSON])->send($content);
     }
 
-    public function render(string $view, array $data = []): void
+    public function render(string $view, array $data = []): self
     {
         $content = $this->renderer->render($view, $data);
-        $this->headers(["Content-Type" => ContentType::TEXT_HTML])->send($content);
+        return $this->headers(["Content-Type" => ContentType::TEXT_HTML])->send($content);
     }
 }

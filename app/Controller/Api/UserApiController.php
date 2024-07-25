@@ -6,6 +6,7 @@ namespace App\Controller\Api;
 
 use App\Core\Context;
 use App\Core\Exception\ValidationException;
+use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Dto\LoginDto;
 use App\Dto\SignupDto;
@@ -22,14 +23,14 @@ class UserApiController
         $this->userService = $userService;
     }
 
-    public function create(Context $ctx): void
+    public function create(Context $ctx): Response
     {
         try {
             $body = new SignupDto($ctx->req->body());
 
             $user = $this->userService->create($body);
 
-            $ctx->res->status(Status::CREATED)->json([
+            return $ctx->res->status(Status::CREATED)->json([
                 "ok" => true,
                 "data" => [
                     "id" => $user->id,
@@ -38,36 +39,36 @@ class UserApiController
                 ],
             ]);
         } catch (ValidationException $e) {
-            $ctx->res->status(Status::BAD_REQUEST)->json([
+            return $ctx->res->status(Status::BAD_REQUEST)->json([
                 "ok" => false,
                 "message" => $e->getErrors(),
             ]);
         } catch (UserAlreadyRegisteredException $e) {
-            $ctx->res->status(Status::BAD_REQUEST)->json([
+            return $ctx->res->status(Status::BAD_REQUEST)->json([
                 "ok" => false,
                 "message" => "user already registered",
             ]);
         }
     }
 
-    public function login(Context $ctx): void
+    public function login(Context $ctx): Response
     {
         try {
             $body = new LoginDto($ctx->req->body());
 
             $token = $this->userService->login($body);
 
-            $ctx->res->status(Status::CREATED)->json([
+            return $ctx->res->status(Status::CREATED)->json([
                 "ok" => true,
                 "accessToken" => $token,
             ]);
         } catch (ValidationException $e) {
-            $ctx->res->status(Status::BAD_REQUEST)->json([
+            return $ctx->res->status(Status::BAD_REQUEST)->json([
                 "ok" => false,
                 "message" => $e->getErrors(),
             ]);
         } catch (InvalidEmailOrPasswordException $e) {
-            $ctx->res->status(Status::BAD_REQUEST)->json([
+            return $ctx->res->status(Status::BAD_REQUEST)->json([
                 "ok" => false,
                 "message" => "invalid email or password",
             ]);

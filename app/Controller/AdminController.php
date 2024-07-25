@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Core\Context;
+use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Service\UserService;
 
@@ -17,11 +18,11 @@ class AdminController
         $this->userService = $userService;
     }
 
-    public function index(Context $ctx): void
+    public function index(Context $ctx): Response
     {
         $user = $this->userService->findOneById($ctx->req->body("uid"));
 
-        $ctx->res->status(Status::OK)->render("admin/index.twig", [
+        return $ctx->res->status(Status::OK)->render("admin/index.twig", [
             "user" => [
                 "username" => $user->username,
                 "email" => $user->email,

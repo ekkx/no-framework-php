@@ -77,16 +77,16 @@ class Kernel
     public function start(): void
     {
         try {
-            $middlewareRunner = array_reduce(
+            $runner = array_reduce(
                 array_reverse($this->middlewares),
                 function (Closure $next, Middleware $middleware): Closure {
                     return $middleware::run($next);
                 },
                 function (Context $ctx): void {
-                    $this->router->dispatch($ctx);
+                    $this->router->dispatch($ctx)->send();
                 }
             );
-            $middlewareRunner($this->ctx);
+            $runner($this->ctx);
         } catch (Throwable $e) {
             $this->router->handleError($this->ctx, $e);
         }

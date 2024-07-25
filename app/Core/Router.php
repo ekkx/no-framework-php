@@ -8,6 +8,7 @@ use App\Core\Exception\InternalServerErrorException;
 use App\Core\Exception\MethodNotAllowedException;
 use App\Core\Exception\NotFoundException;
 use App\Core\Http\Method;
+use App\Core\Http\Response;
 use App\Core\Http\Status;
 use Closure;
 use FastRoute\Dispatcher;
@@ -51,7 +52,6 @@ class Router
                 $ctx->res->status(Status::INTERNAL_SERVER_ERROR)->json([
                     "code" => Status::INTERNAL_SERVER_ERROR,
                     "message" => $e->getMessage(),
-                    "trace" => $e->getTraceAsString(),
                 ]);
             },
         ];
@@ -122,7 +122,7 @@ class Router
      * @throws NotFoundException
      * @throws MethodNotAllowedException
      */
-    public function dispatch(Context $ctx): void
+    public function dispatch(Context $ctx): Response
     {
         $dispatcher = simpleDispatcher(function (RouteCollector $r) {
             foreach (self::$routes as $route) {
@@ -143,11 +143,12 @@ class Router
             case Dispatcher::METHOD_NOT_ALLOWED:
                 throw new MethodNotAllowedException("Method not allowed");
             case Dispatcher::FOUND:
-                $handler = $routeInfo[1];
                 $ctx->req->setParams($routeInfo[2]);
-
+                $handler = $routeInfo[1];
                 $handler($ctx);
-                break;
+                return $ctx->res;
         }
+
+        return $ctx->res;
     }
 }
