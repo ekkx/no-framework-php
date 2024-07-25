@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Exception;
+namespace App\Core\Exception\Validation;
 
+use App\Core\Exception\BaseException;
 use Throwable;
 
 class ValidationException extends BaseException

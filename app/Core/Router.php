@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Core\Exception\InternalServerErrorException;
-use App\Core\Exception\MethodNotAllowedException;
-use App\Core\Exception\NotFoundException;
+use App\Core\Exception\Http\InternalServerErrorException;
+use App\Core\Exception\Http\MethodNotAllowedException;
+use App\Core\Exception\Http\NotFoundException;
 use App\Core\Http\Method;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -14,7 +14,6 @@ use Closure;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Throwable;
-
 use function FastRoute\simpleDispatcher;
 
 class Router

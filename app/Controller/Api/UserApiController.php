@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\Core\Context;
-use App\Core\Exception\ValidationException;
+use App\Core\Exception\Validation\DtoValidationException;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Dto\LoginDto;
@@ -38,7 +38,7 @@ class UserApiController
                     "createdAt" => $user->createdAt,
                 ],
             ]);
-        } catch (ValidationException $e) {
+        } catch (DtoValidationException $e) {
             return $ctx->res->status(Status::BAD_REQUEST)->json([
                 "ok" => false,
                 "message" => $e->getErrors(),
@@ -62,7 +62,7 @@ class UserApiController
                 "ok" => true,
                 "accessToken" => $token,
             ]);
-        } catch (ValidationException $e) {
+        } catch (DtoValidationException $e) {
             return $ctx->res->status(Status::BAD_REQUEST)->json([
                 "ok" => false,
                 "message" => $e->getErrors(),

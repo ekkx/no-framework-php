@@ -9,9 +9,9 @@ use App\Controller\Api\UserApiController;
 use App\Controller\AuthController;
 use App\Controller\ErrorController;
 use App\Controller\HomeController;
-use App\Core\Exception\InternalServerErrorException;
-use App\Core\Exception\MethodNotAllowedException;
-use App\Core\Exception\NotFoundException;
+use App\Core\Exception\Http\InternalServerErrorException;
+use App\Core\Exception\Http\MethodNotAllowedException;
+use App\Core\Exception\Http\NotFoundException;
 use App\Core\Router;
 
 class Route

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Dto;
 
 use App\Core\Dto;
-use App\Core\Exception\ValidationException;
+use App\Core\Exception\Validation\DtoValidationException;
 
 class SignupDto extends Dto
 {
@@ -15,7 +15,7 @@ class SignupDto extends Dto
     public ?string $passwordConfirm = null;
 
     /**
-     * @throws ValidationException
+     * @throws DtoValidationException
      */
     public function __construct(array $data)
     {
