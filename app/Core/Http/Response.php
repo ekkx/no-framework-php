@@ -11,7 +11,6 @@ class Response
     private int $status;
     private array $headers;
     private Renderer $renderer;
-    private bool $responded;
 
     public function __construct(Renderer $renderer)
     {
@@ -19,7 +18,6 @@ class Response
         $this->headers(["Content-Type" => ContentType::TEXT_HTML]);
 
         $this->renderer = $renderer;
-        $this->responded = false;
     }
 
     public function getRenderer(): Renderer
@@ -60,7 +58,7 @@ class Response
 
     public function send(?string $content = null): self
     {
-        if ($this->responded) {
+        if (headers_sent()) {
             return $this;
         }
 
@@ -69,11 +67,7 @@ class Response
             header($header . ": " . $value, false);
         }
 
-        if (!is_null($content)) {
-            echo $content;
-        }
-
-        $this->responded = true;
+        echo $content;
 
         return $this;
     }
