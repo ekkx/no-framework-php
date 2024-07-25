@@ -18,6 +18,10 @@ export class Login {
             return
         }
 
-        alert(response.message);
+        let alertMessage = "";
+        for (let key in response.message) {
+            alertMessage += response.message[key].join(", ") + "\n";
+        }
+        alert(alertMessage);
     }
 }

@@ -19,14 +19,12 @@ export class Signup {
             return
         }
 
-        const message = response.message;
-
-        if (typeof message === "string") {
-            alert(message);
+        if (typeof response.message === "string") {
+            alert(response.message);
         } else {
             let alertMessage = "";
-            for (let key in message) {
-                alertMessage += message[key].join(", ") + "\n";
+            for (let key in response.message) {
+                alertMessage += response.message[key].join(", ") + "\n";
             }
             alert(alertMessage);
         }
