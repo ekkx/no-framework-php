@@ -10,9 +10,9 @@ class Response
 {
     private int $status;
     private array $headers;
-    private Renderer $renderer;
+    private ?Renderer $renderer;
 
-    public function __construct(Renderer $renderer)
+    public function __construct(?Renderer $renderer = null)
     {
         $this->status(Status::OK);
         $this->headers(["Content-Type" => ContentType::TEXT_HTML]);
@@ -20,7 +20,7 @@ class Response
         $this->renderer = $renderer;
     }
 
-    public function getRenderer(): Renderer
+    public function getRenderer(): ?Renderer
     {
         return $this->renderer;
     }
@@ -80,12 +80,23 @@ class Response
     public function json(array $data): self
     {
         $content = json_encode($data, JSON_UNESCAPED_UNICODE, JSON_UNESCAPED_SLASHES);
+
         return $this->headers(["Content-Type" => ContentType::APPLICATION_JSON])->send($content);
     }
 
     public function render(string $view, array $data = []): self
     {
+        if (is_null($this->renderer)) {
+            $this->status(Status::INTERNAL_SERVER_ERROR)->json([
+                "code" => Status::INTERNAL_SERVER_ERROR,
+                "message" => "No renderer configured",
+            ]);
+
+            return $this;
+        }
+
         $content = $this->renderer->render($view, $data);
+
         return $this->headers(["Content-Type" => ContentType::TEXT_HTML])->send($content);
     }
 }
