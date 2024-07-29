@@ -22,7 +22,7 @@ class Request
         array $_server,
     )
     {
-        $this->method = strtoupper($_server["REQUEST_METHOD"]);
+        $this->method = $_server["REQUEST_METHOD"];
         $this->uri = $_server["REQUEST_URI"];
         $this->params = [];
         $this->query = $_get;
@@ -97,6 +97,18 @@ class Request
     public function ip(): string
     {
         return $this->ip;
+    }
+
+    public function setMethod(string $method): self
+    {
+        $this->method = $method;
+        return $this;
+    }
+
+    public function setUri(string $uri): self
+    {
+        $this->uri = $uri;
+        return $this;
     }
 
     public function setParams(array $params): self

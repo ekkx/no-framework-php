@@ -1,5 +1,5 @@
 # Common
-.PHONY: setup setup-backend
+.PHONY: setup setup-backend test
 
 DOCKER_COMMAND = docker compose run --rm app bash -c
 
@@ -12,6 +12,9 @@ setup:
 setup-backend:
 	$(DOCKER_COMMAND) "php -r \"file_exists('.env') || copy('.env.example', '.env');\""
 	$(DOCKER_COMMAND) "composer install"
+
+test:
+	$(DOCKER_COMMAND) "vendor/bin/phpunit tests"
 
 # Database
 .PHONY: migrate reset
