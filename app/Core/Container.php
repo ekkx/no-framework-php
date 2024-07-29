@@ -33,7 +33,6 @@ class Container
     public function inject(array $dependencies): void
     {
         foreach ($dependencies as $key => $value) {
-            error_log(json_encode($key));
             $this->container->set($key, $value);
         }
     }

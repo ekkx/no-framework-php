@@ -31,21 +31,6 @@ class Kernel
         $this->middlewares = [];
     }
 
-    private function initialize(): void
-    {
-        $renderer = null;
-        try {
-            $renderer = $this->container->make(Renderer::class);
-        } catch (ContainerException) {
-            // Ignore considering the case where Renderer is unnecessary
-        }
-
-        $req = Request::fromGlobals();
-        $res = new Response($renderer);
-
-        $this->ctx = new Context($req, $res);
-    }
-
     public function getContainer(): Container
     {
         return $this->container;
@@ -70,23 +55,64 @@ class Kernel
         $this->middlewares[] = $middleware;
     }
 
+    private function getDefaultContext(?Renderer $renderer): Context
+    {
+        $req = Request::fromGlobals();
+        $res = new Response($renderer);
+
+        return new Context($req, $res);
+    }
+
+    private function initialize(): void
+    {
+        $renderer = null;
+        try {
+            $renderer = $this->container->make(Renderer::class);
+        } catch (ContainerException) {
+            // Ignore considering the case where Renderer is unnecessary
+        }
+
+        try {
+            $this->ctx = $this->container->make(Context::class);
+        } catch (ContainerException) {
+            $this->ctx = $this->getDefaultContext($renderer);
+        }
+    }
+
+    private function createMiddlewareRunner(): Closure
+    {
+        return function (Closure $next, Middleware $middleware): Closure {
+            return function (Context $ctx) use ($next, $middleware): void {
+                try {
+                    $middleware::run($next)($ctx);
+                } catch (Throwable $e) {
+                    $this->router->handleError($ctx, $e);
+                }
+            };
+        };
+    }
+
+    private function createAppRunner(): Closure
+    {
+        return function (Context $ctx): void {
+            try {
+                $this->router->dispatch($ctx)->send();
+            } catch (Throwable $e) {
+                $this->router->handleError($this->ctx, $e);
+            }
+        };
+    }
+
     public function start(): void
     {
         $this->initialize();
 
-        try {
-            $runner = array_reduce(
-                array_reverse($this->middlewares),
-                function (Closure $next, Middleware $middleware): Closure {
-                    return $middleware::run($next);
-                },
-                function (Context $ctx): void {
-                    $this->router->dispatch($ctx)->send();
-                }
-            );
-            $runner($this->ctx);
-        } catch (Throwable $e) {
-            $this->router->handleError($this->ctx, $e);
-        }
+        $pipeline = array_reduce(
+            array_reverse($this->middlewares),
+            $this->createMiddlewareRunner(),
+            $this->createAppRunner(),
+        );
+
+        $pipeline($this->ctx);
     }
 }
