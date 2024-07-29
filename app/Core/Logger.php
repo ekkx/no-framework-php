@@ -16,10 +16,10 @@ class Logger
 
     public function __construct()
     {
-        $this->monolog = $this->getDefaultLogger();
+        $this->monolog = $this->initLogger();
     }
 
-    private function getDefaultLogger(): Monolog
+    private function initLogger(): Monolog
     {
         $monolog = new Monolog("App");
 

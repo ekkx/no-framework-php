@@ -29,10 +29,10 @@ class Router
         self::$routes = [];
         self::$prefix = "";
 
-        self::$errorHandlers = self::getDefaultErrorHandlers();
+        self::$errorHandlers = self::initErrorHandlers();
     }
 
-    private static function getDefaultErrorHandlers(): array
+    private static function initErrorHandlers(): array
     {
         return [
             NotFoundException::class => function (Context $ctx, Throwable $e) {

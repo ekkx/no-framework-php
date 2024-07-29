@@ -55,7 +55,7 @@ class Kernel
         $this->middlewares[] = $middleware;
     }
 
-    private function getDefaultContext(?Renderer $renderer): Context
+    private function initContext(?Renderer $renderer): Context
     {
         $req = Request::fromGlobals();
         $res = new Response($renderer);
@@ -63,7 +63,7 @@ class Kernel
         return new Context($req, $res);
     }
 
-    private function initialize(): void
+    private function build(): void
     {
         $renderer = null;
         try {
@@ -75,7 +75,7 @@ class Kernel
         try {
             $this->ctx = $this->container->make(Context::class);
         } catch (ContainerException) {
-            $this->ctx = $this->getDefaultContext($renderer);
+            $this->ctx = $this->initContext($renderer);
         }
     }
 
@@ -105,7 +105,7 @@ class Kernel
 
     public function start(): void
     {
-        $this->initialize();
+        $this->build();
 
         $pipeline = array_reduce(
             array_reverse($this->middlewares),
