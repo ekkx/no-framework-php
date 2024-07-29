@@ -8,9 +8,7 @@ use App\Core\Exception\ContainerException;
 use Closure;
 use DI\Container as DIContainer;
 use DI\ContainerBuilder;
-use DI\DependencyException;
-use DI\NotFoundException;
-use Exception;
+use Throwable;
 
 class Container
 {
@@ -22,17 +20,27 @@ class Container
             $builder = new ContainerBuilder();
             $builder->addDefinitions();
             $this->container = $builder->build();
-        } catch (Exception) {
+        } catch (Throwable) {
             exit("Building container failed.");
         }
     }
 
-    public function inject(string $class, Closure $initializer): void
+    /**
+     * Injects dependencies into the container.
+     *
+     * @param array<string|class-string, Closure> $dependencies
+     */
+    public function inject(array $dependencies): void
     {
-        $this->container->set($class, $initializer);
+        foreach ($dependencies as $key => $value) {
+            error_log(json_encode($key));
+            $this->container->set($key, $value);
+        }
     }
 
     /**
+     * Retrieves an instance of the given class from the container.
+     *
      * @template T
      * @param string|class-string<T> $class
      *
@@ -40,11 +48,11 @@ class Container
      *
      * @throws ContainerException
      */
-    public function get(string $class)
+    public function make(string $class)
     {
         try {
             return $this->container->get($class);
-        } catch (DependencyException|NotFoundException $e) {
+        } catch (Throwable $e) {
             throw new ContainerException($e->getMessage());
         }
     }
