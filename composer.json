@@ -6,7 +6,13 @@
             "App\\": "app/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "require": {
+        "ext-pdo": "*",
         "php": "^8.3",
         "monolog/monolog": "^3.6",
         "twig/twig": "^3.10",
@@ -15,7 +21,9 @@
         "guzzlehttp/guzzle": "^7.8",
         "php-di/php-di": "^7.0",
         "vlucas/valitron": "^1.4",
-        "ext-pdo": "*",
         "firebase/php-jwt": "^6.10"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.2"
     }
 }
