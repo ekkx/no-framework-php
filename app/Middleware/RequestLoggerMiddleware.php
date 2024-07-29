@@ -27,7 +27,7 @@ class RequestLoggerMiddleware implements Middleware
             $code = $ctx->res->getStatus();
             $body = json_encode($ctx->req->body(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-            $ctx->logger->debug("{$method}: {$uri} ({$code}) +{$time}ms {$body}", "HTTP");
+            $ctx->logger->debug("{$method}: {$uri} ({$code}) +{$time}ms {$body}", [], "HTTP");
         };
     }
 }

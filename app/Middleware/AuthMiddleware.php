@@ -31,7 +31,7 @@ class AuthMiddleware implements Middleware
                 return $next($ctx);
             }
 
-            $ctx->logger->debug("Verifying token...", self::class);
+            $ctx->logger->debug("Verifying token...", [], self::class);
 
             try {
                 $token = $ctx->req->cookies("access_token");
@@ -41,13 +41,13 @@ class AuthMiddleware implements Middleware
 
                 $ctx->req->setBody(["uid" => intval($payload->uid)]);
             } catch (Exception $e) {
-                $ctx->logger->debug($e->getMessage(), self::class);
+                $ctx->logger->debug($e->getMessage(), [], self::class);
                 $ctx->res->redirect("/auth/login");
 
                 return null; // stop running middlewares
             }
 
-            $ctx->logger->debug("Verification success!", self::class);
+            $ctx->logger->debug("Verification success!", [], self::class);
 
             return $next($ctx);
         };

@@ -43,7 +43,7 @@ class Logger
         $this->monolog = $monolog;
     }
 
-    private static function buildMessage(string $message, object|string $from = "", array $extra = []): string
+    private static function buildMessage(string $message, array $extra = [], object|string $from = ""): string
     {
         $prefix = "";
         if ($from) {
@@ -63,18 +63,18 @@ class Logger
         return $prefix . $message;
     }
 
-    public function info(string $message, object|string $from = "", array $extra = []): void
+    public function info(string $message, array $extra = [], object|string $from = ""): void
     {
-        $this->monolog->info(self::buildMessage($message, $from, $extra));
+        $this->monolog->info(self::buildMessage($message, $extra, $from));
     }
 
-    public function debug(string $message, object|string $from = "", array $extra = []): void
+    public function debug(string $message, array $extra = [], object|string $from = ""): void
     {
-        $this->monolog->debug(self::buildMessage($message, $from, $extra));
+        $this->monolog->debug(self::buildMessage($message, $extra, $from));
     }
 
-    public function error(string $message, object|string $from = "", array $extra = []): void
+    public function error(string $message, array $extra = [], object|string $from = ""): void
     {
-        $this->monolog->error(self::buildMessage($message, $from, $extra));
+        $this->monolog->error(self::buildMessage($message, $extra, $from));
     }
 }

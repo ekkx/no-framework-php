@@ -26,7 +26,7 @@ class ErrorController
 
     public function internalServerError(Context $ctx, Throwable $e): Response
     {
-        $ctx->logger->error($e->getMessage(), $this, $e->getTrace());
+        $ctx->logger->error($e->getMessage(), $e->getTrace(), $this);
 
         return $ctx->res->status(Status::INTERNAL_SERVER_ERROR)->render("errors/500.twig");
     }
