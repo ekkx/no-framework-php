@@ -13,16 +13,14 @@ class Entry
 {
     public static function run(): void
     {
-        $app = new Kernel();
+        $root = __DIR__ . "/../";
 
-        $app->env(__DIR__ . "/../");
-
-        $config = Config::instance();
+        $app = new Kernel($root);
 
         $container = $app->getContainer();
-        $container->inject(Config::class, function () use ($config) {
-            return $config;
-        });
+        $container->inject(require $root . "/config/providers.php");
+
+        $config = Config::instance();
 
         $app->use(new CustomLoggerMiddleware($config));
         $app->use(new RequestLoggerMiddleware());

@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Core\Exception\ContainerException;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Renderer\Renderer;
-use App\Core\Renderer\TwigRenderer;
 use Closure;
 use Dotenv\Dotenv;
 use Throwable;
-use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
 
 class Kernel
 {
@@ -22,27 +20,30 @@ class Kernel
     /** @var Middleware[] */
     private array $middlewares;
 
-    public function __construct()
+    public function __construct(?string $envPath = null)
     {
+        if (!is_null($envPath)) {
+            $this::env($envPath);
+        }
+
         $this->container = new Container();
         $this->router = new Router($this->container);
         $this->middlewares = [];
-        $this->ctx = $this->getDefaultContext();
     }
 
-    private function getDefaultRenderer(): Renderer
+    private function initialize(): void
     {
-        $loader = new FilesystemLoader(__DIR__ . "/../../resources/views");
-        $twig = new Environment($loader);
-        return new TwigRenderer($twig);
-    }
+        $renderer = null;
+        try {
+            $renderer = $this->container->make(Renderer::class);
+        } catch (ContainerException) {
+            // Ignore considering the case where Renderer is unnecessary
+        }
 
-    private function getDefaultContext(): Context
-    {
         $req = Request::fromGlobals();
-        $res = new Response($this->getDefaultRenderer());
+        $res = new Response($renderer);
 
-        return new Context($req, $res);
+        $this->ctx = new Context($req, $res);
     }
 
     public function getContainer(): Container
@@ -64,11 +65,6 @@ class Kernel
         $dotenv->load();
     }
 
-    public function template(Renderer $renderer): void
-    {
-        $this->ctx->res->renderer($renderer);
-    }
-
     public function use(Middleware $middleware): void
     {
         $this->middlewares[] = $middleware;
@@ -76,6 +72,8 @@ class Kernel
 
     public function start(): void
     {
+        $this->initialize();
+
         try {
             $runner = array_reduce(
                 array_reverse($this->middlewares),

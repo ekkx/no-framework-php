@@ -77,35 +77,35 @@ class Router
     public static function get(string $path, string $class, string $method): void
     {
         self::add(Method::GET, $path, function (Context $ctx) use ($class, $method) {
-            self::$container->get($class)->$method($ctx);
+            self::$container->make($class)->$method($ctx);
         });
     }
 
     public static function post(string $path, string $class, string $method): void
     {
         self::add(Method::POST, $path, function (Context $ctx) use ($class, $method) {
-            self::$container->get($class)->$method($ctx);
+            self::$container->make($class)->$method($ctx);
         });
     }
 
     public static function put(string $path, string $class, string $method): void
     {
         self::add(Method::PUT, $path, function (Context $ctx) use ($class, $method) {
-            self::$container->get($class)->$method($ctx);
+            self::$container->make($class)->$method($ctx);
         });
     }
 
     public static function delete(string $path, string $class, string $method): void
     {
         self::add(Method::DELETE, $path, function (Context $ctx) use ($class, $method) {
-            self::$container->get($class)->$method($ctx);
+            self::$container->make($class)->$method($ctx);
         });
     }
 
     public static function onError(string $exception, string $class, string $method): void
     {
         self::$errorHandlers[$exception] = function (Context $ctx, Throwable $e) use ($class, $method) {
-            self::$container->get($class)->$method($ctx, $e);
+            self::$container->make($class)->$method($ctx, $e);
         };
     }
 
@@ -145,7 +145,6 @@ class Router
                 $ctx->req->setParams($routeInfo[2]);
                 $handler = $routeInfo[1];
                 $handler($ctx);
-                return $ctx->res;
         }
 
         return $ctx->res;
