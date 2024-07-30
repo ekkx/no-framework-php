@@ -73,7 +73,7 @@ class Response
         return $this;
     }
 
-    public function content(?string $content): self
+    public function write(?string $content): self
     {
         $this->content = $content;
 
@@ -107,7 +107,7 @@ class Response
     {
         $content = json_encode($data, JSON_UNESCAPED_UNICODE, JSON_UNESCAPED_SLASHES);
 
-        return $this->headers(["Content-Type" => ContentType::APPLICATION_JSON])->content($content)->send();
+        return $this->headers(["Content-Type" => ContentType::APPLICATION_JSON])->write($content)->send();
     }
 
     public function render(string $view, array $data = []): self
@@ -123,6 +123,6 @@ class Response
 
         $content = $this->renderer->render($view, $data);
 
-        return $this->headers(["Content-Type" => ContentType::TEXT_HTML])->content($content)->send();
+        return $this->headers(["Content-Type" => ContentType::TEXT_HTML])->write($content)->send();
     }
 }
