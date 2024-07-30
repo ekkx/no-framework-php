@@ -34,7 +34,7 @@ class AuthMiddleware implements Middleware
             $ctx->logger->debug("Verifying token...", [], self::class);
 
             try {
-                $token = $ctx->req->cookies("access_token");
+                $token = $ctx->req->cookies("access-token");
                 $key = new Key(self::$secretKey, "HS256");
 
                 $payload = JWT::decode($token, $key);

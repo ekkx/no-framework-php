@@ -13,7 +13,7 @@ export class Login {
 
         const response = await client.user.login(email, password);
         if (response.ok) {
-            document.cookie = `access_token=${response.accessToken}; path=/`;
+            document.cookie = `access-token=${response.accessToken}; path=/`;
             window.location.href = "/admin";
             return
         }

@@ -8,14 +8,18 @@ use App\Core\Renderer\Renderer;
 
 class Response
 {
+    private ?Renderer $renderer;
     private int $status;
     private array $headers;
-    private ?Renderer $renderer;
+    private ?string $content;
+    private ?string $redirectUri;
 
     public function __construct(?Renderer $renderer = null)
     {
-        $this->status(Status::OK);
-        $this->headers(["Content-Type" => ContentType::TEXT_HTML]);
+        $this->status = Status::OK;
+        $this->headers = ["Content-Type" => ContentType::TEXT_HTML];
+        $this->content = null;
+        $this->redirectUri = null;
 
         $this->renderer = $renderer;
     }
@@ -39,24 +43,44 @@ class Response
         return $this->headers[$key] ?? $default;
     }
 
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function getRedirectUri(): ?string
+    {
+        return $this->redirectUri;
+    }
+
     public function renderer(Renderer $renderer): void
     {
         $this->renderer = $renderer;
+
     }
 
     public function status(int $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
     public function headers(array $headers): self
     {
-        $this->headers = array_merge($this->headers ?? [], $headers);
+        $this->headers = array_merge($this->headers, $headers);
+
         return $this;
     }
 
-    public function send(?string $content = null): self
+    public function content(?string $content): self
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function send(): self
     {
         if (headers_sent()) {
             return $this;
@@ -67,21 +91,23 @@ class Response
             header($header . ": " . $value, false);
         }
 
-        echo $content;
+        echo $this->content;
 
         return $this;
     }
 
     public function redirect(string $url, int $status = 302): self
     {
-        return $this->status($status)->headers(["Location" => $url])->send();
+        $this->redirectUri = $url;
+
+        return $this->status($status)->headers(["Location" => $this->redirectUri])->send();
     }
 
     public function json(array $data): self
     {
         $content = json_encode($data, JSON_UNESCAPED_UNICODE, JSON_UNESCAPED_SLASHES);
 
-        return $this->headers(["Content-Type" => ContentType::APPLICATION_JSON])->send($content);
+        return $this->headers(["Content-Type" => ContentType::APPLICATION_JSON])->content($content)->send();
     }
 
     public function render(string $view, array $data = []): self
@@ -97,6 +123,6 @@ class Response
 
         $content = $this->renderer->render($view, $data);
 
-        return $this->headers(["Content-Type" => ContentType::TEXT_HTML])->send($content);
+        return $this->headers(["Content-Type" => ContentType::TEXT_HTML])->content($content)->send();
     }
 }

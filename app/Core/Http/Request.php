@@ -102,36 +102,49 @@ class Request
     public function setMethod(string $method): self
     {
         $this->method = $method;
+
         return $this;
     }
 
     public function setUri(string $uri): self
     {
         $this->uri = $uri;
+
         return $this;
     }
 
     public function setParams(array $params): self
     {
-        $this->params = array_merge($this->params ?? [], $params);
+        $this->params = array_merge($this->params, $params);
+
         return $this;
     }
 
     public function setQuery(array $query): self
     {
-        $this->query = array_merge($this->query ?? [], $query);
+        $this->query = array_merge($this->query, $query);
+
         return $this;
     }
 
     public function setBody(array $body): self
     {
-        $this->body = array_merge($this->body ?? [], $body);
+        $this->body = array_merge($this->body, $body);
+
         return $this;
     }
 
     public function setHeaders(array $headers): self
     {
-        $this->headers = array_merge($this->headers ?? [], $headers);
+        $this->headers = array_merge($this->headers, $headers);
+
+        return $this;
+    }
+
+    public function setCookies(array $cookies): self
+    {
+        $this->cookies = array_merge($this->cookies, $cookies);
+
         return $this;
     }
 }
