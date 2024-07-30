@@ -13,12 +13,10 @@ class Entry
 {
     public static function run(): void
     {
-        $root = __DIR__ . "/../";
-
-        $app = new Kernel($root);
+        $app = new Kernel();
 
         $container = $app->getContainer();
-        $container->inject(require $root . "/config/providers.php");
+        $container->inject(require __DIR__ . "/../config/providers.php");
 
         $config = Config::instance();
 

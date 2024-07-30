@@ -16,7 +16,7 @@ class Kernel
 {
     private Container $container;
     private Router $router;
-    private Context $ctx;
+    private ?Context $ctx;
     /** @var Middleware[] */
     private array $middlewares;
 
@@ -28,6 +28,8 @@ class Kernel
 
         $this->container = new Container();
         $this->router = new Router($this->container);
+
+        $this->ctx = null;
         $this->middlewares = [];
     }
 
@@ -36,7 +38,7 @@ class Kernel
         return $this->container;
     }
 
-    public function getContext(): Context
+    public function getContext(): ?Context
     {
         return $this->ctx;
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Route\Api;
 
-use App\Core\Http\Method;
 use App\Core\Http\Status;
 use PHPUnit\Framework\TestCase;
 use Tests\Feature\Route\Helper\AuthHelper;
@@ -16,7 +15,7 @@ class UserApiRouteTest extends TestCase
 
     public function testCreateUserAndGetEmail(): string
     {
-        $email = $this->randomString(8) . '@example.com';
+        $email = $this->randomString(8) . "@example.com";
 
         $res = (new AuthHelper())->createUser("Jane Doe", $email, "password", "password");
 

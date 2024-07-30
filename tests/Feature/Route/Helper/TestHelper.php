@@ -23,8 +23,6 @@ trait TestHelper
 
     public function setUp(): void
     {
-        Kernel::env($this->root);
-
         $this->dependencies = require $this->root . "/config/providers.php";
         $this->config = Config::instance();
     }
